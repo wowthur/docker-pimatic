@@ -1,0 +1,14 @@
+FROM debian
+
+RUN echo Install prequisites... \
+	&& apt update \
+	&& apt install -y curl build-essential git python
+
+RUN echo Install node v4.8.3... \
+	&& curl -L https://nodejs.org/dist/v4.8.3/node-v4.8.3-linux-armv7l.tar.gz -o /tmp/node-v4.8.3-linux-armv7l.tar.gz \
+	&& cd /usr/local \
+	&& tar xzvf /tmp/node-v4.8.3-linux-armv7l.tar.gz --strip=1 \
+	&& rm /tmp/node-v4.8.3-linux-armv7l.tar.gz
+
+RUN echo Install yarn... \
+	&& npm install -g yarn

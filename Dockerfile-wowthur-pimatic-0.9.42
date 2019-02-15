@@ -1,0 +1,24 @@
+FROM wowthur/node:4.8.3
+
+RUN echo Install pimatic... \
+	&& mkdir -p /home/pi/pimatic-app \
+	&& cd /home/pi/pimatic-app \
+	&& npm install pimatic@0.9.42 sqlite3
+
+RUN echo Default config... \
+	&& cd /home/pi/pimatic-app \
+	&& cp ./node_modules/pimatic/config_default.json ./config.json \
+	&& sed -i "s/\"password\": \"\"/\"password\": \"pimatic\"/g" /home/pi/pimatic-app/config.json \
+	&& sed -i "s/\"settings\": {/\"settings\": {\n    "debug": true,/g" /home/pi/pimatic-app/config.json
+
+RUN touch /home/pi/pimatic-app/pimatic-daemon.log \
+	&& echo "#!/bin/sh" > /pimatic \
+	&& echo "export CFLAGS='-fomit-frame-pointer'" >> /pimatic \
+	&& echo "/usr/local/bin/node /home/pi/pimatic-app/node_modules/pimatic/pimatic.js start" >> /pimatic \
+	&& echo "sleep 5" >> /pimatic \
+	&& echo "tail -f /home/pi/pimatic-app/pimatic-daemon.log" >> /pimatic \
+	&& chmod +x /pimatic
+
+EXPOSE 80
+
+CMD ["/pimatic"]
